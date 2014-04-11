@@ -1,0 +1,149 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title">Companies List</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="row" style="margin-bottom:5px;">
+                    <div class="col-md-3">
+                        <form class="form-inline" role="form">
+                            <div class="form-group">
+                                <input type="text" placeholder="Search..." class="form-control" ng-model="companyFilter" ng-change="updateCompanyFilter()">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-9">
+                        <button class="btn btn-success pull-right" ng-csv="getCSV()" csv-header="['Name','Address1','Address2','City','State','Zip','Country']" filename="Companies.csv"><span class="glyphicon glyphicon-download-alt"></span> Download as CSV</button>
+                    </div>
+                </div>
+                <table class="table table-bordered atTable table-hover" at-table at-list="filteredCompanies">
+                    <thead></thead>
+                    <tbody>
+                        <tr>
+                            <td at-implicit at-attribute="name" at-title="Name" at-sortable at-initial-sorting="asc" ng-click="viewCompany(item)" style="cursor:pointer;"></td>
+                            <td at-implicit at-attribute="city" at-title="City" at-sortable ng-click="viewCompany(item)" style="cursor:pointer;"></td>
+                            <td at-implicit at-attribute="state" at-title="State" at-sortable ng-click="viewCompany(item)" style="cursor:pointer;"></td>
+                            <td at-title="Contacts" ng-click="viewCompany(item)" style="cursor:pointer;">{{item.contacts.length}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col-md-3">
+                        <form class="form-inline" role="form" style="margin:20px 0;">
+                            <label for="perPage">Results per page</label>
+                            <div class="form-group">
+                                <select id="perPage" ng-model="perPage" class="form-control">
+                                    <option>15</option>
+                                    <option>30</option>
+                                    <option>60</option>
+                                    <option>120</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-9">    
+                        <at-pagination at-list="filteredCompanies" at-config="config" class="pull-right"></at-pagination>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer clearfix">
+                <button class="btn btn-info" ng-click="newCompany()"><i class="fa fa-fw fa-building-o"></i> Add a new company</button>
+            </div>
+        </div><!-- /.box -->
+    </div>
+    <div class="col-md-6">
+        <div class="box box-info" ng-show='companyModel.visible'>
+            <div class="box-header">
+                <h3 class="box-title" ng-show='companyModel.action=="read"'>View Company</h3>
+                <h3 class="box-title" ng-show='companyModel.action=="update"'>Edit Company</h3>
+                <h3 class="box-title" ng-show='companyModel.action=="create"'>New Company</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="alert alert-danger alert-dismissable" ng-show="validationError">
+                    <i class="fa fa-ban"></i>
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <b>Error</b> <span ng-bind="errors"></span>
+                </div>
+                <form role="form" name="companyForm" ng-hide="companyModel.action=='read'">
+                    <div ng-class="{'form-group':true,'has-error':!companyForm.name.$pristine&&!companyForm.name.$valid}">
+                        <label for="name"><i ng-show="!companyForm.name.$pristine&&!companyForm.name.$valid" class="fa fa-times-circle-o"></i> Name</label>
+                        <input class="form-control" name="name" id="name" type="text" ng-model="companyModel.name" ng-maxlength="30" ng-required="true">
+                        <p ng-hide="companyForm.name.$pristine||companyForm.name.$valid" class="help-block">Must be between 1-40 characters</p>
+                    </div>
+                    <div ng-class="{'form-group':true,'has-error':!companyForm.address1.$pristine&&!companyForm.address1.$valid}">
+                        <label for="address1"><i ng-show="!companyForm.address1.$pristine&&!companyForm.address1.$valid" class="fa fa-times-circle-o"></i> Address</label>
+                        <input class="form-control" name="address1" id="address1" type="text" ng-model="companyModel.address1" ng-maxlength="255">
+                        <p ng-hide="companyForm.address1.$pristine||companyForm.address1.$valid" class="help-block">Must be less than 255 characters</p>
+                    </div>
+                    <div ng-class="{'form-group':true,'has-error':!companyForm.address2.$pristine&&!companyForm.address2.$valid}">
+                        <label for="address2"><i ng-show="!companyForm.address2.$pristine&&!companyForm.address2.$valid" class="fa fa-times-circle-o"></i> Address 2</label>
+                        <input class="form-control" name="address2" id="address2" type="text" ng-model="companyModel.address2" ng-maxlength="255">
+                        <p ng-hide="companyForm.address2.$pristine||companyForm.address2.$valid" class="help-block">Must be less than 255 characters</p>
+                    </div>
+                    <div ng-class="{'form-group':true,'has-error':!companyForm.city.$pristine&&!companyForm.city.$valid}">
+                        <label for="city"><i ng-show="!companyForm.city.$pristine&&!companyForm.city.$valid" class="fa fa-times-circle-o"></i> City</label>
+                        <input class="form-control" name="city" id="city" type="text" ng-model="companyModel.city" ng-maxlength="30">
+                        <p ng-hide="companyForm.city.$pristine||companyForm.city.$valid" class="help-block">Must be less than 30 characters</p>
+                    </div>
+                    <div ng-class="{'form-group':true,'has-error':!companyForm.state.$pristine&&!companyForm.state.$valid}">
+                        <label for="state"><i ng-show="!companyForm.state.$pristine&&!companyForm.state.$valid" class="fa fa-times-circle-o"></i> State</label>
+                        <input class="form-control" name="state" id="state" type="text" ng-model="companyModel.state" ng-maxlength="5">
+                        <p ng-hide="companyForm.state.$pristine||companyForm.state.$valid" class="help-block">Must be less than 5 characters</p>
+                    </div>
+                    <div ng-class="{'form-group':true,'has-error':!companyForm.zip.$pristine&&!companyForm.zip.$valid}">
+                        <label for="zip"><i ng-show="!companyForm.zip.$pristine&&!companyForm.zip.$valid" class="fa fa-times-circle-o"></i> Zip</label>
+                        <input class="form-control" name="zip" id="zip" type="text" ng-model="companyModel.zip" ng-maxlength="15">
+                        <p ng-hide="companyForm.zip.$pristine||companyForm.zip.$valid" class="help-block">Must be less than 15 characters</p>
+                    </div>
+                </form>
+                <div class="row" ng-show="companyModel.action=='read'">
+                    <div class="col-md-6">
+                        <dl class="dl-horizontal">
+                            <dt>Name:</dt>
+                            <dd>{{companyModel.name}}</dd>
+                            <dt>Address</dt>
+                            <dd>{{companyModel.address1}}<br ng-show="companyModel.address2.length>0"/>{{companyModel.address2}}</dd>
+                            <dt>City, State, Zip</dt>
+                            <dd>{{companyModel.city}} {{companyModel.state}} {{companyModel.zip}}</dd>
+                            <dt>Added On</dt>
+                            <dd>{{getDate(companyModel.created_at)|date:'medium'}}</dd>
+                            <dt>Last Updated</dt>
+                            <dd>{{getDate(companyModel.updated_at)|date:'medium'}}</dd>
+                            <dt>Added By</dt>
+                            <dd>{{companyModel.user.username}}</dd>
+                        </dl>
+                        <dl class="dl-vertical" ng-show="companyModel.action=='read'" >
+                            <dt>Notes</dt>
+                            <dd style="max-height:300px;overflow-y:auto;">
+                                <div class="well" ng-repeat='note in companyModel.company_notes'>{{note.note}}<br/>Added by <b>{{note.user.username}}</b> on <b>{{getDate(note.created_at)|date:'medium'}}</b></div>
+                                <div class="well" ng-show="companyModel.company_notes.length<1">No notes exist</div>
+                            </dd>
+                        </dl>
+                        <form role="form" name="noteForm" ng-show="companyModel.action=='read'&&noteModel.visible" ng-submit="addNote()">
+                            <div ng-class="{'form-group':true,'has-error':!noteForm.note.$pristine&&!noteForm.note.$valid}">
+                                <label for="note"><i ng-show="!noteForm.note.$pristine&&!noteForm.note.$valid" class="fa fa-times-circle-o"></i> Note</label>
+                                <input class="form-control" name="note" id="note" type="text" ng-model="noteModel.note" ng-required="true" placeholder="Note">
+                                <input type="submit" class="btn btn-success" value="Add Note" ng-disabled="noteForm.$pristine||!noteForm.$valid"/>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Associated Contacts</h4>
+                        <div class="list-group">
+                            <a href="contacts#/view/{{contact.id_hash}}" class="list-group-item" ng-repeat="contact in companyModel.contacts" ng-hide="companyModel.contacts.length<1">{{contact.first_name}} {{contact.last_name}}</a>
+                            <a href="#" class="list-group-item" ng-show="companyModel.contacts.length<1">No associated contacts</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <button class="btn btn-danger pull-right" ng-hide="companyModel.action=='create'" ng-click="deleteCompany()"><i class="fa fa-trash-o"></i> Delete Company</button>
+                <button class="btn" ng-show="companyModel.action=='read'" ng-click="companyModel.action='update'"><i class="fa fa-edit"></i> Toggle Edit</button>
+                <button class="btn btn-success" ng-show="companyModel.action=='read'" ng-click="noteModel.visible=true">Add Note</button>
+                <button class="btn btn-info" ng-show="companyModel.action!='read'" ng-click="saveCompany()" ng-disabled="companyForm.$pristine||!companyForm.$valid"><i class="fa fa-save"></i> {{companyModel.action=='update'?'Update Company':'Create Company'}}</button>
+                <button class="btn btn-warning" ng-hide="companyModel.action=='read'" ng-click="cancelCompany()"><i class="fa fa-undo"></i> Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,6 @@
+.atTable thead th i{
+	font-size:.6em;
+}
+.atTable thead th{
+	cursor:pointer;
+}

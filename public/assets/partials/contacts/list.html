@@ -1,0 +1,136 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title">Contacts List</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="row" style="margin-bottom:5px;">
+                    <div class="col-md-3">
+                        <form class="form-inline" role="form">
+                            <div class="form-group">
+                                <input type="text" placeholder="Search..." class="form-control" ng-model="contactFilter" ng-change="updateContactFilter()">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-9">
+                        <button class="btn btn-success pull-right" ng-csv="getCSV()" csv-header="['Last Name','First Name','Email']" filename="Contacts.csv"><span class="glyphicon glyphicon-download-alt"></span> Download as CSV</button>
+                    </div>
+                </div>
+                <table class="table table-bordered atTable table-hover" at-table at-list="filteredContacts">
+                    <thead></thead>
+                    <tbody>
+                        <tr>
+                            <td at-implicit at-attribute="last_name" at-title="Last Name" at-sortable at-initial-sorting="asc" ng-click="viewContact(item)" style="cursor:pointer;"></td>
+                            <td at-implicit at-attribute="first_name" at-title="First Name" at-sortable ng-click="viewContact(item)" style="cursor:pointer;"></td>
+                            <td at-implicit at-attribute="email" at-title="Email" at-sortable ng-click="viewContact(item)" style="cursor:pointer;"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col-md-3">
+                        <form class="form-inline" role="form" style="margin:20px 0;">
+                            <label for="perPage">Results per page</label>
+                            <div class="form-group">
+                                <select id="perPage" ng-model="perPage" class="form-control">
+                                    <option>15</option>
+                                    <option>30</option>
+                                    <option>60</option>
+                                    <option>120</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-9">    
+                        <at-pagination at-list="filteredContacts" at-config="config" class="pull-right"></at-pagination>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer clearfix">
+                <button class="btn btn-info" ng-click="newContact()"><i class="fa fa-fw fa-users"></i> Add a new contact</button>
+            </div>
+        </div><!-- /.box -->
+    </div>
+    <div class="col-md-6">
+        <div class="box box-info" ng-show='contactModel.visible'>
+            <div class="box-header">
+                <h3 class="box-title" ng-show='contactModel.action=="read"'>View Contact</h3>
+                <h3 class="box-title" ng-show='contactModel.action=="update"'>Edit Contact</h3>
+                <h3 class="box-title" ng-show='contactModel.action=="create"'>New Contact</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="alert alert-danger alert-dismissable" ng-show="validationError">
+                    <i class="fa fa-ban"></i>
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <b>Error</b> <span ng-bind="errors"></span>
+                </div>
+                <form role="form" name="contactForm" ng-hide="contactModel.action=='read'">
+                    <div ng-class="{'form-group':true,'has-error':!contactForm.firstName.$pristine&&!contactForm.firstName.$valid}">
+                        <label for="firstName"><i ng-show="!contactForm.firstName.$pristine&&!contactForm.firstName.$valid" class="fa fa-times-circle-o"></i> First Name</label>
+                        <input class="form-control" name="firstName" id="firstName" type="text" ng-model="contactModel.first_name" ng-maxlength="30" ng-required="true">
+                        <p ng-hide="contactForm.email.$pristine||contactForm.firstName.$valid" class="help-block">Must be between 1-30 characters</p>
+                    </div>
+                    <div ng-class="{'form-group':true,'has-error':!contactForm.lastName.$pristine&&!contactForm.lastName.$valid}">
+                        <label for="lastName"><i ng-show="!contactForm.lastName.$pristine&&!contactForm.lastName.$valid" class="fa fa-times-circle-o"></i> Last Name</label>
+                        <input class="form-control" name="lastName" id="lastName" type="text" ng-model="contactModel.last_name" ng-maxlength="30" ng-required="true">
+                        <p ng-hide="contactForm.email.$pristine||contactForm.lastName.$valid" class="help-block">Must be between 1-30 characters</p>
+                    </div>
+                    <div ng-class="{'form-group':true,'has-error':!contactForm.email.$pristine&&!contactForm.email.$valid}">
+                        <label for="email"><i ng-show="!contactForm.email.$pristine&&!contactForm.email.$valid" class="fa fa-times-circle-o"></i> Email Name</label>
+                        <input class="form-control" name="email" id="email" type="email" ng-model="contactModel.email" ng-maxlength="100" ng-required="true">
+                        <p ng-hide="contactForm.email.$pristine||contactForm.email.$valid" class="help-block">Must be valid email between 1-100 characters</p>
+                    </div>
+                    <div ng-class="{'form-group':true,'has-error':!contactForm.phone.$pristine&&!contactForm.phone.$valid}">
+                        <label for="phone"><i ng-show="!contactForm.phone.$pristine&&!contactForm.phone.$valid" class="fa fa-times-circle-o"></i> Phone Number</label>
+                        <input class="form-control" name="phone" id="phone" type="phone" ng-model="contactModel.phone" ng-maxlength="30" ng-required="false">
+                        <p ng-hide="contactForm.phone.$pristine||contactForm.phone.$valid" class="help-block">Must be between 1-30 characters</p>
+                    </div>
+                    <div ng-class="{'form-group':true,'has-error':!contactForm.company.$pristine&&!contactForm.company.$valid}">
+                        <label for="company"><i ng-show="!contactForm.company.$pristine&&!contactForm.company.$valid" class="fa fa-times-circle-o"></i> Company</label>
+                        <input type="text" ng-model="company" typeahead="c.name for c in companies | filter:$viewValue | limitTo:8" typeahead-editable='true' typeahead-on-select='logger($item,$model,$label)' name="company" class="form-control" ng-maxlength="40">
+                        <p ng-hide="contactForm.company.$pristine||contactForm.company.$valid" class="help-block">Must be between 1-40 characters</p>
+                    </div>
+
+
+                </form>
+                <dl class="dl-horizontal" ng-show="contactModel.action=='read'">
+                    <dt>Name:</dt>
+                    <dd>{{contactModel.first_name}} {{contactModel.last_name}}</dd>
+                    <dt>Email</dt>
+                    <dd><a href="mailto:{{contactModel.email}}">{{contactModel.email}}</a></dd>
+                    <dt>Phone</dt>
+                    <dd>{{contactModel.phone}}</dd>
+                    <dt>Company</dt>
+                    <dd><a href="companies/#/view/{{contactModel.company.id_hash}}">{{contactModel.company.name}}</a></dd>
+                    <dt>Added On</dt>
+                    <dd>{{getDate(contactModel.created_at)|date:'medium'}}</dd>
+                    <dt>Last Updated</dt>
+                    <dd>{{getDate(contactModel.updated_at)|date:'medium'}}</dd>
+                    <dt>Added By</dt>
+                    <dd>{{contactModel.user.username}}</dd>
+                </dl>
+                <dl class="dl-vertical" ng-show="contactModel.action=='read'" >
+                    <dt>Notes</dt>
+                    <dd style="max-height:300px;overflow-y:auto;">
+                        <div class="well" ng-repeat='note in contactModel.contact_notes'>{{note.note}}<br/>Added by <b>{{note.user.username}}</b> on <b>{{getDate(note.created_at)|date:'medium'}}</b></div>
+                        <div class="well" ng-show="contactModel.contact_notes.length<1">No notes exist</div>
+                    </dd>
+                </dl>
+                <form role="form" name="noteForm" ng-show="contactModel.action=='read'&&noteModel.visible" ng-submit="addNote()">
+                    <div ng-class="{'form-group':true,'has-error':!noteForm.note.$pristine&&!noteForm.note.$valid}">
+                        <label for="note"><i ng-show="!noteForm.note.$pristine&&!noteForm.note.$valid" class="fa fa-times-circle-o"></i> Note</label>
+                        <input class="form-control" name="note" id="note" type="text" ng-model="noteModel.note" ng-required="true" placeholder="Note">
+                        <input type="submit" class="btn btn-success" value="Add Note" ng-disabled="noteForm.$pristine||!noteForm.$valid"/>
+                    </div>
+                </form>
+            </div>
+            <div class="box-footer">
+                <button class="btn btn-danger pull-right" ng-hide="contactModel.action=='create'" ng-click="deleteContact()"><i class="fa fa-trash-o"></i> Delete Contact</button>
+                <button class="btn" ng-show="contactModel.action=='read'" ng-click="contactModel.action='update'"><i class="fa fa-edit"></i> Toggle Edit</button>
+                <button class="btn btn-success" ng-show="contactModel.action=='read'" ng-click="noteModel.visible=true">Add Note</button>
+                <button class="btn btn-info" ng-show="contactModel.action!='read'" ng-click="saveContact()" ng-disabled="contactForm.$pristine||!contactForm.$valid"><i class="fa fa-save"></i> {{contactModel.action=='update'?'Update Contact':'Create Contact'}}</button>
+                <button class="btn btn-warning" ng-hide="contactModel.action=='read'" ng-click="cancelContact()"><i class="fa fa-undo"></i> Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
