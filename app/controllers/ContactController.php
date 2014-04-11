@@ -46,6 +46,4 @@ class ContactController extends \BaseController{
 		}
 		return $contact;
 	}
-
-
 }

@@ -19,3 +19,4 @@ Route::resource('contact','ContactController',['only'=>['index','store','destroy
 Route::resource('contactNote','ContactNoteController',['only'=>['index','store']]);
 Route::resource('company','CompanyController',['only'=>['index','store','destroy','show','update']]);
 Route::resource('companyNote','CompanyNoteController',['only'=>['index','store']]);
+Route::resource('user','UserController',['only'=>['index','store','destroy','show','update']]);

@@ -13,4 +13,7 @@ class GuiController extends BaseController{
 	public function getCompanies(){
 		return View::make('gui.companies');
 	}
+	public function getUsers(){
+		return View::make('gui.users');
+	}
 }

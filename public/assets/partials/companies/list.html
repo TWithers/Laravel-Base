@@ -131,7 +131,7 @@
                     <div class="col-md-6">
                         <h4>Associated Contacts</h4>
                         <div class="list-group">
-                            <a href="contacts#/view/{{contact.id_hash}}" class="list-group-item" ng-repeat="contact in companyModel.contacts" ng-hide="companyModel.contacts.length<1">{{contact.first_name}} {{contact.last_name}}</a>
+                            <a href="contacts#/view/{{contact.id_hash}}" class="list-group-item" ng-repeat="contact in companyModel.contacts" ng-hide="companyModel.contacts.length<1">{{contact.first_name}} {{contact.last_name}} <span ng-show="contact.email.length>0">&lt;{{contact.email}}&gt;</span></a>
                             <a href="#" class="list-group-item" ng-show="companyModel.contacts.length<1">No associated contacts</a>
                         </div>
                     </div>

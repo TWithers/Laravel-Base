@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-6" ng-class="{'hidden-print':contactModel.visible}">
         <div class="box box-primary">
             <div class="box-header">
                 <h3 class="box-title">Contacts List</h3>
@@ -57,6 +57,17 @@
                 <h3 class="box-title" ng-show='contactModel.action=="read"'>View Contact</h3>
                 <h3 class="box-title" ng-show='contactModel.action=="update"'>Edit Contact</h3>
                 <h3 class="box-title" ng-show='contactModel.action=="create"'>New Contact</h3>
+                <div class="pull-right box-tools" ng-hide="contactModel.action!='read'">
+                    <!-- button with a dropdown -->
+                    <div class="btn-group open">
+                        <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
+                        <ul class="dropdown-menu pull-right" role="menu">
+                            <li><a href="#" onclick="window.print()"><i class="fa fa-print"></i> Print</a></li>
+                            <li><a href="#"><i class="fa fa-envelope-o"></i> Send Email</a></li>
+                            <li><a href="#" ng-click="deleteContact()"><i class="fa fa-trash-o"></i> Delete Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div><!-- /.box-header -->
             <div class="box-body">
                 <div class="alert alert-danger alert-dismissable" ng-show="validationError">
@@ -125,7 +136,6 @@
                 </form>
             </div>
             <div class="box-footer">
-                <button class="btn btn-danger pull-right" ng-hide="contactModel.action=='create'" ng-click="deleteContact()"><i class="fa fa-trash-o"></i> Delete Contact</button>
                 <button class="btn" ng-show="contactModel.action=='read'" ng-click="contactModel.action='update'"><i class="fa fa-edit"></i> Toggle Edit</button>
                 <button class="btn btn-success" ng-show="contactModel.action=='read'" ng-click="noteModel.visible=true">Add Note</button>
                 <button class="btn btn-info" ng-show="contactModel.action!='read'" ng-click="saveContact()" ng-disabled="contactForm.$pristine||!contactForm.$valid"><i class="fa fa-save"></i> {{contactModel.action=='update'?'Update Contact':'Create Contact'}}</button>

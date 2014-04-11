@@ -10,6 +10,9 @@ class IlluminateValidator implements ValidatorInterface{
 			$this->data=$data;
 		}
 	}
+	public function setRule($field,$value){
+		$this->rules[$field]=$value;
+	}
 	public function isValid(){
 		//$validatorFactory=new Illuminate\Validation\Factory;
 		$validator=Validator::make($this->data,$this->rules);

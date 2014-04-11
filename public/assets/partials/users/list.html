@@ -1,0 +1,109 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title">Users List</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="row" style="margin-bottom:5px;">
+                    <div class="col-md-3">
+                        <form class="form-inline" role="form">
+                            <div class="form-group">
+                                <input type="text" placeholder="Search..." class="form-control" ng-model="userFilter" ng-change="updateUserFilter()">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-9">
+                        <button class="btn btn-success pull-right" ng-csv="getCSV()" csv-header="['Last Name','First Name','Email']" filename="Users.csv"><span class="glyphicon glyphicon-download-alt"></span> Download as CSV</button>
+                    </div>
+                </div>
+                <table class="table table-bordered atTable table-hover" at-table at-list="filteredUsers">
+                    <thead></thead>
+                    <tbody>
+                        <tr>
+                            <td at-implicit at-attribute="username" at-title="Username" at-sortable at-initial-sorting="asc" ng-click="viewUser(item)" style="cursor:pointer;"></td>
+                            <td at-implicit at-attribute="email" at-title="Email" at-sortable ng-click="viewUser(item)" style="cursor:pointer;"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col-md-3">
+                        <form class="form-inline" role="form" style="margin:20px 0;">
+                            <label for="perPage">Results per page</label>
+                            <div class="form-group">
+                                <select id="perPage" ng-model="perPage" class="form-control">
+                                    <option>15</option>
+                                    <option>30</option>
+                                    <option>60</option>
+                                    <option>120</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-9">    
+                        <at-pagination at-list="filteredUsers" at-config="config" class="pull-right"></at-pagination>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer clearfix">
+                <button class="btn btn-info" ng-click="newUser()"><i class="fa fa-fw fa-users"></i> Add a new user</button>
+            </div>
+        </div><!-- /.box -->
+    </div>
+    <div class="col-md-6">
+        <div class="box box-info" ng-show='userModel.visible'>
+            <div class="box-header">
+                <h3 class="box-title" ng-show='userModel.action=="read"'>View User</h3>
+                <h3 class="box-title" ng-show='userModel.action=="update"'>Edit User</h3>
+                <h3 class="box-title" ng-show='userModel.action=="create"'>New User</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="alert alert-danger alert-dismissable" ng-show="validationError">
+                    <i class="fa fa-ban"></i>
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <b>Error</b> <span ng-bind="errors"></span>
+                </div>
+                <form role="form" name="userForm" ng-hide="userModel.action=='read'">
+                    <div ng-class="{'form-group':true,'has-error':!userForm.username.$pristine&&!userForm.username.$valid}">
+                        <label for="username"><i ng-show="!userForm.username.$pristine&&!userForm.username.$valid" class="fa fa-times-circle-o"></i> Userame</label>
+                        <input class="form-control" name="username" id="username" type="text" ng-model="userModel.username" ng-minlength="4" ng-maxlength="20" ng-required="true">
+                        <p ng-hide="userForm.username.$pristine||userForm.username.$valid" class="help-block">Must be between 4-20 characters</p>
+                    </div>
+                    <div ng-class="{'form-group':true,'has-error':!userForm.password.$pristine&&!userForm.password.$valid}">
+                        <label for="password"><i ng-show="!userForm.password.$pristine&&!userForm.password.$valid" class="fa fa-times-circle-o"></i> Password (Leave blank to keep same password)</label>
+                        <input class="form-control" name="password" id="password" type="password" ng-model="userModel.password" ng-minlength="8" ng-maxlength="30" ng-required="userModel.action=='create'">
+                        <p ng-hide="userForm.username.$pristine||userForm.password.$valid" class="help-block">Must be between 8-30 characters</p>
+                    </div>
+                    <div ng-class="{'form-group':true,'has-error':!userForm.password_confirmation.$pristine&&!userForm.password_confirmation.$valid}">
+                        <label for="password_confirmation"><i ng-show="!userForm.password_confirmation.$pristine&&!userForm.password_confirmation.$valid" class="fa fa-times-circle-o"></i> Repeat Password</label>
+                        <input class="form-control" name="password_confirmation" id="password_confirmation" type="password" ng-model="userModel.password_confirmation" ng-minlength="8" ng-maxlength="30" ng-required="userModel.action=='create'">
+                        <p ng-hide="userForm.password_confirmation.$pristine||userForm.password_confirmation.$valid" class="help-block">Must be between 8-30 characters</p>
+                    </div>
+                    <div ng-class="{'form-group':true,'has-error':!userForm.email.$pristine&&!userForm.email.$valid}">
+                        <label for="email"><i ng-show="!userForm.email.$pristine&&!userForm.email.$valid" class="fa fa-times-circle-o"></i> Email</label>
+                        <input class="form-control" name="email" id="email" type="email" ng-model="userModel.email" ng-maxlength="100" ng-required="true">
+                        <p ng-hide="userForm.email.$pristine||userForm.email.$valid" class="help-block">Must be valid email between 1-100 characters</p>
+                    </div>
+
+
+                </form>
+                <dl class="dl-horizontal" ng-show="userModel.action=='read'">
+                    <dt>Username:</dt>
+                    <dd>{{userModel.username}}</dd>
+                    <dt>Email</dt>
+                    <dd><a href="mailto:{{userModel.email}}">{{userModel.email}}</a></dd>
+                    <dt>Added On</dt>
+                    <dd>{{getDate(userModel.created_at)|date:'medium'}}</dd>
+                    <dt>Last Updated</dt>
+                    <dd>{{getDate(userModel.updated_at)|date:'medium'}}</dd>
+                </dl>
+            </div>
+            <div class="box-footer">
+                <button class="btn btn-danger pull-right" ng-hide="userModel.action=='create'" ng-click="deleteUser()"><i class="fa fa-trash-o"></i> Delete User</button>
+                <button class="btn" ng-show="userModel.action=='read'" ng-click="userModel.action='update'"><i class="fa fa-edit"></i> Toggle Edit</button>
+                <button class="btn btn-info" ng-show="userModel.action!='read'" ng-click="saveUser()" ng-disabled="userForm.$pristine||!userForm.$valid"><i class="fa fa-save"></i> {{userModel.action=='update'?'Update User':'Create User'}}</button>
+                <button class="btn btn-warning" ng-hide="userModel.action=='read'" ng-click="cancelUser()"><i class="fa fa-undo"></i> Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

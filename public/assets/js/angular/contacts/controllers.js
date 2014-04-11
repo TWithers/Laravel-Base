@@ -62,6 +62,10 @@ contactsControllers.controller('ContactListController',['$scope','Contact','Comp
 		$scope.noteModel.visible=false;
 		$scope.noteModel.note='';
 		$scope.contactModel=angular.copy(c);
+		if($scope.contactModel.company!==null){
+			$scope.company=$scope.contactModel.company.name;
+			$scope.contactModel.company_id=$scope.contactModel.company.id_hash;
+		}
 		$scope.contactModel.action='read';
 		$scope.contactModel.visible=true;
 		$scope.contactForm.$setPristine();

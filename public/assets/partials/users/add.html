@@ -1,0 +1,29 @@
+<div class="box" ng-show='contactModel.visible'>
+	<div class="box-header">
+        <h3 class="box-title" ng-show='contactModel.action=="read"'>View Contact</h3>
+        <h3 class="box-title" ng-show='contactModel.action=="update"'>Edit Contact</h3>
+        <h3 class="box-title" ng-show='contactModel.action=="create"'>New Contact</h3>
+    </div><!-- /.box-header -->
+    <div class="box-body">
+    	<form role="form" name="contactForm">
+    		<div ng-class="{'form-group':true,'has-error':!contactForm.$pristine&&!contactForm.firstName.$valid}">
+    			<label for="firstName"><i ng-show="!contactForm.$pristine&&!contactForm.firstName.$valid" class="fa fa-times-circle-o"></i> First Name</label>
+    			<input class="form-control" name="firstName" id="firstName" type="text" ng-model="contactModel.first_name" ng-maxlength="30" ng-required="true">
+    			<p ng-hide="contactForm.$pristine||contactForm.firstName.$valid" class="help-block">Must be between 1-30 characters</p>
+    		</div>
+    		<div ng-class="{'form-group':true,'has-error':!contactForm.$pristine&&!contactForm.lastName.$valid}">
+    			<label for="lastName"><i ng-show="!contactForm.$pristine&&!contactForm.lastName.$valid" class="fa fa-times-circle-o"></i> Last Name</label>
+    			<input class="form-control" name="lastName" id="lastName" type="text" ng-model="contactModel.last_name" ng-maxlength="30" ng-required="true">
+    			<p ng-hide="contactForm.$pristine||contactForm.lastName.$valid" class="help-block">Must be between 1-30 characters</p>
+    		</div>
+    		<div ng-class="{'form-group':true,'has-error':!contactForm.$pristine&&!contactForm.email.$valid}">
+    			<label for="email"><i ng-show="!contactForm.$pristine&&!contactForm.email.$valid" class="fa fa-times-circle-o"></i> Email Name</label>
+    			<input class="form-control" name="email" id="email" type="email" ng-model="contactModel.email" ng-maxlength="100" ng-required="true">
+    			<p ng-hide="contactForm.$pristine||contactForm.email.$valid" class="help-block">Must be valid email between 1-100 characters</p>
+    		</div>
+
+    	</form>
+    </div>
+    <div class="box-footer">
+    </div>
+</div>
